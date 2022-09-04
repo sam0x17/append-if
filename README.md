@@ -1,4 +1,7 @@
 # append-if
+
+![crates.io](https://img.shields.io/crates/v/append-if.svg)
+
 A CLI utility for appending text to files based on simple conditional logic
 about the contents of those files. Particularly useful for appending text to
 .bashrc and other places without accidentally appending the same thing multiple
