@@ -75,6 +75,7 @@ fn main() {
             println!("appending to path {}.", args.path);
         }
         let mut file = OpenOptions::new()
+            .create(true)
             .write(true)
             .append(true)
             .open(args.path)
