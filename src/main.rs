@@ -13,8 +13,8 @@ arg_enum! {
     }
 }
 
-/// A utility for appending text to files based on simple conditional logic that
-/// is often desirable (but complex) in shell scripts.
+/// A utility for appending text to files based on simple conditional logic.
+/// Designed to be highly useful in shell scripts.
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
@@ -26,17 +26,24 @@ struct Args {
     #[clap(short, long, value_parser)]
     append: String,
 
-    /// (Optional) Path of the file to check. Defaults to [`path`].
+    /// Path of the file to check. Defaults to path.
     #[clap(short, long, value_parser)]
     check_path: Option<String>,
 
-    /// Pattern to match against. Defaults to [`append`].
+    /// Pattern to match against. Defaults to what we are appending. Can be a
+    /// string or regular expression. If an invalid regular expression is
+    /// provided, the input will be treated as a string we are searching for in
+    /// the target file.
     #[clap(long, value_parser)]
     pattern: Option<String>,
 
-    /// (Optional) Mode for conditional logic.
+    /// Mode used for conditional logic. Choices are 'missing', 'present', or 'always'
     #[clap(short, long, value_parser, default_value_t = Mode::Missing)]
     mode: Mode,
+
+    /// Flag to enable verbose output.
+    #[clap(short, long, value_parser, default_value_t = false)]
+    verbose: bool,
 }
 
 fn contains_or_matches(pattern: &str, haystack: &str) -> bool {
@@ -64,6 +71,9 @@ fn main() {
         Mode::Always => true,
     };
     if perform_append {
+        if args.verbose {
+            println!("appending to path {}.", args.path);
+        }
         let mut file = OpenOptions::new()
             .write(true)
             .append(true)
@@ -71,5 +81,9 @@ fn main() {
             .unwrap();
 
         writeln!(file, "{}", args.append).expect("Could not write to the specified file");
+    } else {
+        if args.verbose {
+            println!("not appending, constraints not met.");
+        }
     }
 }
